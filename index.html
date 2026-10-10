@@ -4,20 +4,208 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EQS – Equation Solver</title>
+<meta name="description" content="EQS solves the equations of engineering problems: type them in any order, with fluid properties, units checked, parametric tables and plots. For Mac, Windows and Linux.">
+<meta property="og:title" content="EQS – Equation Solver">
+<meta property="og:description" content="Type the equations of an engineering problem in any order. EQS solves them, with fluid properties, units, tables and plots.">
+<meta property="og:image" content="https://stefanbx.github.io/eqs-site/img/1_equations_solution.jpg">
+<link rel="icon" href="img/favicon.png">
 <style>
-  body { font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #1d1d1f; background: #fff; }
-  h1 { font-size: 30px; }
-  @media (prefers-color-scheme: dark) { body { color: #f5f5f7; background: #1d1d1f; } a { color: #6cb4ff; } }
+  :root {
+    --bg: #ffffff; --bg-alt: #f5f6f8; --fg: #1d1d1f; --muted: #5f6368; --line: #e3e5e8;
+    --accent: #1f5fa8; --accent-fg: #ffffff; --orange: #e8742a; --card: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141518; --bg-alt: #1c1e22; --fg: #f2f3f5; --muted: #a4a9b1; --line: #2c2f35;
+      --accent: #5b9be0; --accent-fg: #0d1117; --orange: #f0884a; --card: #1c1e22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+  a { color: var(--accent); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+  header.top .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--fg); text-decoration: none; }
+  header.top .brand img { width: 32px; height: 32px; border-radius: 7px; }
+  header.top nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 15px; }
+  .hero { text-align: center; padding: 48px 0 32px; }
+  .hero img.icon { width: 112px; height: 112px; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .hero h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.12; margin: 20px 0 10px; letter-spacing: -0.02em; }
+  .hero p.lead { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 720px; margin: 0 auto 26px; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn { display: inline-block; padding: 11px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1px solid var(--accent); }
+  .btn.primary { background: var(--accent); color: var(--accent-fg); }
+  .btn.secondary { color: var(--accent); }
+  .btn.soon { cursor: default; opacity: .85; }
+  .note { font-size: 14px; color: var(--muted); margin-top: 12px; }
+  .shot { margin: 28px auto 0; max-width: 1000px; }
+  .shot img, .gallery img { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+  section { padding: 56px 0; }
+  section.alt { background: var(--bg-alt); }
+  h2 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 8px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .feature { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .feature h3 { margin: 0 0 6px; font-size: 18px; }
+  .feature p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .gallery figure { margin: 0; }
+  .gallery figcaption { font-size: 14.5px; color: var(--muted); margin-top: 8px; }
+  .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .price { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; }
+  .price.main { border: 2px solid var(--accent); }
+  .price h3 { margin: 0; font-size: 19px; }
+  .price .amount { font-size: 30px; font-weight: 700; margin: 10px 0 2px; }
+  .price .per { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .price ul { padding-left: 18px; margin: 0 0 16px; color: var(--muted); font-size: 15.5px; flex: 1; }
+  .price .btn { align-self: flex-start; text-align: center; }
+  .faq details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { color: var(--muted); margin: 8px 0 0; }
+  footer { padding: 32px 0 48px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+  footer a { color: var(--muted); margin-right: 16px; }
+  @media (max-width: 560px) { header.top nav a.hide-small { display: none; } section { padding: 40px 0; } }
 </style>
 </head>
 <body>
-<h1>EQS – Equation Solver</h1>
-<p>EQS solves the equations of engineering problems: type the equations in any order, and EQS solves them, with fluid
-properties, units checked, parametric tables and plots. For thermodynamics, heat transfer, fluid mechanics and
-energy courses, and for the engineers who use these subjects every day.</p>
-<ul>
-  <li><a href="support.html">Support</a></li>
-  <li><a href="privacy.html">Privacy policy</a></li>
-</ul>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><img src="img/icon.png" alt="">EQS</a>
+    <nav>
+      <a href="#features" class="hide-small">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#universities" class="hide-small">Universities</a>
+      <a href="support.html">Support</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <img class="icon" src="img/icon.png" alt="EQS icon">
+    <h1>EQS – Equation Solver</h1>
+    <p class="lead">Type the equations of an engineering problem in any order. EQS solves them, with fluid properties,
+      units checked in every equation, parametric tables and plots.</p>
+    <div class="buttons">
+      <span class="btn primary soon" title="EQS is in Apple's review now">Mac App Store – coming soon</span>
+      <a class="btn secondary" href="#universities">Licences for universities</a>
+    </div>
+    <p class="note">Free download with a 14-day trial · Mac, Windows and Linux · No account, works offline</p>
+    <div class="shot"><img src="img/1_equations_solution.jpg" alt="EQS: equations of an organic Rankine cycle and their solution with units" width="1600" height="1000"></div>
+  </div>
+</div>
+
+<section id="features" class="alt">
+  <div class="wrap">
+    <h2>Made for engineering courses and engineering work</h2>
+    <p class="sub">Thermodynamics, heat transfer, fluid mechanics and energy systems, from the first homework to the design
+      calculation.</p>
+    <div class="features">
+      <div class="feature"><h3>Equations in any order</h3><p>Write the equations as on paper. EQS finds which unknown each
+        equation gives and solves the equations together where they must be.</p></div>
+      <div class="feature"><h3>Units checked</h3><p>Every number has its unit, and EQS checks each equation. See SI and
+        English units side by side.</p></div>
+      <div class="feature"><h3>Fluid properties</h3><p>Water, steam, refrigerants, air, gases and mixtures, brines and
+        incompressible liquids, from the open CoolProp library.</p></div>
+      <div class="feature"><h3>Tables and plots</h3><p>Change one input over a range and see every result. Plot curves,
+        zoom, fit curves, and export to SVG and PNG.</p></div>
+      <div class="feature"><h3>Property diagrams</h3><p>T-s, P-h, h-s and more, with the states of your cycle drawn on
+        them. The psychrometric chart for humid air.</p></div>
+      <div class="feature"><h3>Cycles as flowsheets</h3><p>Draw pumps, turbines, heaters and condensers. EQS writes the
+        equations and shows the stream table and the energy balance.</p></div>
+      <div class="feature"><h3>Analysis</h3><p>Optimisation, uncertainty and sensitivity, and integration in time.</p></div>
+      <div class="feature"><h3>Learn by example</h3><p>More than 40 worked examples and a built-in guide that teaches EQS
+        step by step.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>See EQS at work</h2>
+    <p class="sub">All pictures show the real program with the examples that come with it.</p>
+    <div class="gallery">
+      <figure><img src="img/2_property_plot.jpg" alt="A Rankine cycle on the T-s diagram of water" loading="lazy" width="1600" height="1000">
+        <figcaption>A Rankine cycle on the T-s diagram of water.</figcaption></figure>
+      <figure><img src="img/3_parametric_table.jpg" alt="A parametric table with two plots" loading="lazy" width="1600" height="1000">
+        <figcaption>Change the boiler pressure; see the efficiency and the turbine exit quality.</figcaption></figure>
+      <figure><img src="img/4_flowsheet.jpg" alt="The flowsheet window with stream table and energy balance" loading="lazy" width="1600" height="1000">
+        <figcaption>A cycle drawn as a flowsheet, with its stream table and energy balance.</figcaption></figure>
+      <figure><img src="img/5_psychrometric.jpg" alt="Humid air mixing on the psychrometric chart" loading="lazy" width="1600" height="1000">
+        <figcaption>Mixing two humid air streams, on the psychrometric chart.</figcaption></figure>
+      <figure><img src="img/6_formatted.jpg" alt="Formatted equations of a regenerative Rankine cycle" loading="lazy" width="1600" height="1000">
+        <figcaption>Equations formatted as in a textbook; copy them as LaTeX or as a picture.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="alt">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <p class="sub">Try everything free for 14 days. Then buy once; updates stay free.</p>
+    <div class="prices">
+      <div class="price main">
+        <h3>Mac</h3>
+        <div class="amount">€49.99</div>
+        <div class="per">one purchase · US$49.99 · free 14-day trial</div>
+        <ul>
+          <li>From the Mac App Store, with your Apple Account</li>
+          <li>Apple silicon and Intel Macs, macOS 12 or later</li>
+          <li>On every Mac where you use the same Apple Account</li>
+        </ul>
+        <span class="btn primary soon">Coming soon</span>
+      </div>
+      <div class="price" id="universities">
+        <h3>Universities</h3>
+        <div class="amount">Site licence</div>
+        <div class="per">one faculty or department · per year</div>
+        <ul>
+          <li>Every computer of the laboratories, and the students' and staff's own computers</li>
+          <li>Windows, macOS and Linux; installers for the laboratories</li>
+          <li>One licence file, installed once a year, no internet needed</li>
+        </ul>
+        <a class="btn secondary" href="mailto:butucea.stefan@gmail.com?subject=EQS%20site%20licence">Ask for an offer</a>
+      </div>
+      <div class="price">
+        <h3>Windows and Linux</h3>
+        <div class="amount">Licence</div>
+        <div class="per">for one person</div>
+        <ul>
+          <li>The same EQS as on the Mac</li>
+          <li>Windows 10 and 11, and current Linux distributions</li>
+          <li>A trial licence on request</li>
+        </ul>
+        <a class="btn secondary" href="mailto:butucea.stefan@gmail.com?subject=EQS%20for%20Windows%20or%20Linux">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <details><summary>Do I need an account or an internet connection?</summary>
+      <p>No. EQS runs on your computer, and your models stay in your own files. The Mac App Store version makes no
+        connection of its own.</p></details>
+    <details><summary>What can I do without buying?</summary>
+      <p>Open and read every model and example at any time. The free 14-day trial solves without limits. After it, a
+        purchase or a licence file unlocks solving again.</p></details>
+    <details><summary>My university has a licence. Does it work on my Mac?</summary>
+      <p>Yes. In EQS, open Help → License Status… → Install License File…, and choose the licence file from your
+        university.</p></details>
+    <details><summary>Which fluids and data does EQS have?</summary>
+      <p>The fluids of the open CoolProp library (water and steam, refrigerants, air, gases and their mixtures, brines),
+        humid air, ideal-gas data for combustion, and property tables of common solids.</p></details>
+    <details><summary>Where do I get help?</summary>
+      <p>Help → EQS Guide in the program, and the <a href="support.html">support page</a>.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="support.html">Support</a><a href="privacy.html">Privacy policy</a><a href="mailto:butucea.stefan@gmail.com">butucea.stefan@gmail.com</a>
+    <p>© 2026 Stefan Butucea. Mac and Mac App Store are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+
 </body>
 </html>
